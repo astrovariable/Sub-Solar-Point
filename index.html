@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subsolar Point Calculator</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -79,6 +80,50 @@ button:hover {
     margin-top: 20px;
     border-radius: 15px;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        align-items: flex-start;
+        padding: 20px 0;
+    }
+
+    .main-card {
+        width: 95%;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    input[type="datetime-local"] {
+        width: 100%;
+        margin-right: 0;
+        font-size: 14px;
+    }
+
+    button {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .result {
+        font-size: 14px;
+    }
+
+    #map {
+        height: 300px;
+    }
 }
 </style>
 </head>
@@ -162,7 +207,7 @@ function calculate(){
     var sunIcon = L.divIcon({
     className: '',
     html: '☀️',
-    iconSize: [30, 30],
+    iconSize: [45, 45],
     iconAnchor: [15, 15]
     });
 
