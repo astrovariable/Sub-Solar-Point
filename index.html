@@ -7,42 +7,104 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+
 <style>
 body {
-    font-family: Arial;
-    background: #0d1b2a;
-    color: white;
-    text-align: center;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #1b2735, #090a0f);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
-.container {
-    margin: 20px;
+
+.main-card {
+    width: 90%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
-input, select, button {
-    padding: 8px;
-    margin: 5px;
+
+h1 {
+    margin-top: 0;
+    font-weight: 500;
+    letter-spacing: 1px;
 }
+
+.controls {
+    margin-bottom: 20px;
+}
+
+input[type="datetime-local"] {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    background: #ffcc00;
+    color: #000;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    font-size: 16px;
+    text-align: left;
+}
+
 #map {
     height: 400px;
     margin-top: 20px;
-}
-.result {
-    margin-top: 15px;
-    font-size: 18px;
+    border-radius: 15px;
+    overflow: hidden;
 }
 </style>
 </head>
 
+
 <body>
+
+<div class="main-card">
 
 <h1>🌍 Subsolar Point Calculator</h1>
 
-<div class="container">
+<div class="controls">
     <input type="datetime-local" id="datetime">
     <button onclick="calculate()">Calculate</button>
 </div>
 
-<div class="result" id="output"></div>
+<div class="result" id="output">
+    Enter a date and time to compute the subsolar point.
+</div>
+
 <div id="map"></div>
+
+</div>
+
+
+
 
 <script>
 
@@ -97,7 +159,14 @@ function calculate(){
 
     if(marker) map.removeLayer(marker);
 
-    marker = L.marker([subLat, subLon]).addTo(map);
+    var sunIcon = L.divIcon({
+    className: '',
+    html: '☀️',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+    });
+
+    marker = L.marker([subLat, subLon], {icon: sunIcon}).addTo(map);
     map.setView([subLat, subLon], 4);
 
     document.getElementById("output").innerHTML =
