@@ -38,7 +38,6 @@ input, select, button {
 
 <div class="container">
     <input type="datetime-local" id="datetime">
-    <input type="number" id="timezone" placeholder="Timezone Offset (e.g. 5.5 for IST)">
     <button onclick="calculate()">Calculate</button>
 </div>
 
@@ -61,10 +60,7 @@ function toJulian(date){
 function calculate(){
 
     let dt = document.getElementById("datetime").value;
-    let tz = parseFloat(document.getElementById("timezone").value);
-
-    let localDate = new Date(dt);
-    let utc = new Date(localDate.getTime() - tz*3600000);
+    let utc = new Date(dt);
 
     let JD = toJulian(utc);
     let T = (JD - 2451545.0)/36525;
@@ -116,4 +112,5 @@ function calculate(){
 </script>
 
 </body>
+
 </html>
