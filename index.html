@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Subsolar Point Calculator</title>
+<title>Where on Earth: Zero Shadow Moment</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -133,7 +133,7 @@ button:hover {
 
 <div class="main-card">
 
-<h1>🌍 Subsolar Point Calculator</h1>
+<h1>🌍 Where on Earth: Zero Shadow Moment</h1>
 
 <div class="controls">
     <input type="datetime-local" id="datetime">
@@ -207,18 +207,24 @@ function calculate(){
     var sunIcon = L.divIcon({
     className: '',
     html: '☀️',
-    iconSize: [45, 45],
+    iconSize: [30, 30],
     iconAnchor: [15, 15]
     });
 
     marker = L.marker([subLat, subLon], {icon: sunIcon}).addTo(map);
     map.setView([subLat, subLon], 4);
 
+    let latDir = subLat >= 0 ? "N" : "S";
+    let lonDir = subLon >= 0 ? "E" : "W";
+
+    let formattedLat = Math.abs(subLat).toFixed(2) + "° " + latDir;
+    let formattedLon = Math.abs(subLon).toFixed(2) + "° " + lonDir;
+
     document.getElementById("output").innerHTML =
-        "Solar Declination: " + subLat.toFixed(2) + "°<br>" +
+        "Solar Declination: " + Dec.toFixed(2) + "°<br>" +
         "Solar Right Ascension: " + RA.toFixed(2) + "°<br>" +
-        "Subsolar Latitude: " + subLat.toFixed(2) + "°<br>" +
-        "Subsolar Longitude: " + subLon.toFixed(2) + "°";
+        "<strong>Subsolar Latitude:</strong> " + formattedLat + "<br>" +
+        "<strong>Subsolar Longitude:</strong> " + formattedLon;
 
 }
 
