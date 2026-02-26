@@ -138,6 +138,9 @@ button:hover {
 <div class="controls">
     <input type="datetime-local" id="datetime">
     <button onclick="calculate()">Calculate</button>
+    <div style="margin-top:15px;">
+    <input type="text" id="citySearch" placeholder="Enter city name (e.g. Gandhinagar)">
+    <button onclick="findCity()">Search City</button>
 </div>
 
 <div class="result" id="output">
@@ -153,6 +156,7 @@ button:hover {
 
 <script>
 
+var distanceLine;
 var map = L.map('map').setView([0,0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
@@ -163,6 +167,60 @@ var marker;
 function toJulian(date){
     return (date / 86400000) + 2440587.5;
 }
+
+
+let selectedCity = null;
+
+async function findCity() {
+
+    let cityName = document.getElementById("citySearch").value;
+
+    if(!cityName) return;
+
+    let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    if(data.length > 0) {
+
+        let lat = parseFloat(data[0].lat);
+        let lon = parseFloat(data[0].lon);
+
+        selectedCity = {lat: lat, lon: lon, name: data[0].display_name};
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup("City: " + selectedCity.name)
+            .openPopup();
+
+        map.setView([lat, lon], 6);
+
+    } else {
+        alert("City not found.");
+    }
+}
+
+
+function haversine(lat1, lon1, lat2, lon2) {
+
+    const R = 6371; // Earth radius in km
+
+    let dLat = (lat2 - lat1) * Math.PI/180;
+    let dLon = (lon2 - lon1) * Math.PI/180;
+
+    lat1 *= Math.PI/180;
+    lat2 *= Math.PI/180;
+
+    let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1) * Math.cos(lat2) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+}
+
+
 
 function calculate(){
 
@@ -201,7 +259,11 @@ function calculate(){
     subLon = ((subLon + 540) % 360) - 180;
 
     let subLat = Dec;
+    let distance = null;
 
+    if(selectedCity !== null) {
+        distance = haversine(subLat, subLon, selectedCity.lat, selectedCity.lon);
+}
     if(marker) map.removeLayer(marker);
 
     var sunIcon = L.divIcon({
@@ -210,6 +272,17 @@ function calculate(){
     iconSize: [30, 30],
     iconAnchor: [15, 15]
     });
+    
+    if(selectedCity !== null) {
+
+    if(distanceLine) map.removeLayer(distanceLine);
+
+    distanceLine = L.polyline([
+        [subLat, subLon],
+        [selectedCity.lat, selectedCity.lon]
+    ], {color: 'yellow'}).addTo(map);
+
+}
 
     marker = L.marker([subLat, subLon], {icon: sunIcon}).addTo(map);
     map.setView([subLat, subLon], 4);
@@ -220,12 +293,19 @@ function calculate(){
     let formattedLat = Math.abs(subLat).toFixed(2) + "° " + latDir;
     let formattedLon = Math.abs(subLon).toFixed(2) + "° " + lonDir;
 
-    document.getElementById("output").innerHTML =
-        "Solar Declination: " + Dec.toFixed(2) + "°<br>" +
-        "Solar Right Ascension: " + RA.toFixed(2) + "°<br>" +
-        "<strong>Subsolar Latitude:</strong> " + formattedLat + "<br>" +
-        "<strong>Subsolar Longitude:</strong> " + formattedLon;
+    let outputHTML =
+    "Solar Declination: " + Dec.toFixed(2) + "°<br>" +
+    "Solar Right Ascension: " + RA.toFixed(2) + "°<br>" +
+    "<strong>Subsolar Latitude:</strong> " + formattedLat + "<br>" +
+    "<strong>Subsolar Longitude:</strong> " + formattedLon;
 
+    if(distance !== null) {
+        outputHTML += "<br><strong>Aerial Distance to City:</strong> " 
+                      + distance.toFixed(2) + " km";
+}
+
+document.getElementById("output").innerHTML = outputHTML;
+   
 }
 
 </script>
@@ -233,5 +313,4 @@ function calculate(){
 </body>
 
 </html>
-
 
