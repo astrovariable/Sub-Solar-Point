@@ -60,8 +60,7 @@ function toJulian(date){
 function calculate(){
 
     let dt = document.getElementById("datetime").value;
-    let localDate = new Date(dt);
-    let utc = new Date(localDate.getTime() - localDate.getTimezoneOffset()*60000);
+    let utc = new Date(dt);
     let JD = toJulian(utc);
     let T = (JD - 2451545.0)/36525;
 
@@ -114,4 +113,5 @@ function calculate(){
 </body>
 
 </html>
+
 
